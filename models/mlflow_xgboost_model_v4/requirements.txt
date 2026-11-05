@@ -1,0 +1,4 @@
+mlflow==3.17.2
+xgboost==3.4.1
+pandas==2.2.3
+numpy

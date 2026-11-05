@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Airport Traffic Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <main class="page">
+      <header class="page-header">
+        <p class="eyebrow">Airport traffic prediction</p>
+        <h1>Forecast airport traffic</h1>
+        <p class="intro">Choose a forecast period and country, then click the map to set the airport coordinates.</p>
+      </header>
+
+      <div class="layout">
+        <section class="card form-card" aria-labelledby="prediction-heading">
+          <h2 id="prediction-heading">Prediction details</h2>
+          <form id="prediction-form">
+            <label for="date">Prediction date</label>
+            <input id="date" name="date" type="date" required>
+            <p id="date-help" class="field-help">The selected date is used for a daily forecast.</p>
+
+            <label for="period">Forecast period</label>
+            <select id="period" name="period" required>
+              <option value="daily" selected>Daily</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+
+            <label for="country">Country</label>
+            <p class="field-help">Automatically detected from the selected map location; you can change it manually.</p>
+            <select id="country" name="country" required>
+              <option value="" disabled selected>Choose a country</option>
+              {% for country in countries %}
+              <option value="{{ country }}">{{ country }}</option>
+              {% endfor %}
+            </select>
+
+            <div class="coordinate-grid">
+              <div>
+                <label for="latitude">Latitude</label>
+                <input id="latitude" name="latitude" type="number" step="any" min="-90" max="90" placeholder="Click the map" required>
+              </div>
+              <div>
+                <label for="longitude">Longitude</label>
+                <input id="longitude" name="longitude" type="number" step="any" min="-180" max="180" placeholder="Click the map" required>
+              </div>
+            </div>
+
+            <label for="elevation_ft">Elevation (feet)</label>
+            <input id="elevation_ft" name="elevation_ft" type="number" step="any" placeholder="Filled from the map; editable" required>
+
+            <button id="submit-button" type="submit">Predict daily flights</button>
+            <p id="form-error" class="message error" role="alert" hidden></p>
+          </form>
+
+          <section id="result" class="result" aria-live="polite" hidden>
+            <p class="eyebrow">Estimated total flights</p>
+            <p id="prediction-value" class="prediction-value"></p>
+            <p id="prediction-context" class="result-context"></p>
+          </section>
+        </section>
+
+        <section class="card map-card" aria-labelledby="map-heading">
+          <div class="map-heading">
+            <div>
+              <h2 id="map-heading">Choose coordinates</h2>
+              <p>Click the map or drag the marker to the airport location.</p>
+            </div>
+            <span class="map-hint">Google Maps</span>
+          </div>
+          <div id="map" role="application" aria-label="Google map for choosing airport coordinates"></div>
+          <p id="map-status" class="message" role="status">Loading map…</p>
+        </section>
+      </div>
+
+      <section id="chart-card" class="card chart-card" aria-labelledby="chart-heading" hidden>
+        <div class="chart-heading">
+          <div>
+            <h2 id="chart-heading">Prediction trend</h2>
+            <p id="chart-description" class="message"></p>
+          </div>
+          <span id="chart-unit" class="map-hint">Predicted flights</span>
+        </div>
+        <canvas id="prediction-chart" role="img" aria-label="Prediction chart"></canvas>
+      </section>
+
+      <footer>
+        Model: <code>xgb_model_airport_5.pkl</code>. Elevation is retrieved from Google when available and can be edited.
+      </footer>
+    </main>
+
+    <script>
+      window.APP_CONFIG = {
+        googleMapsApiKey: {{ google_maps_api_key | tojson }}
+      };
+    </script>
+    <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+  </body>
+</html>
