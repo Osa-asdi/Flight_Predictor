@@ -18,6 +18,8 @@ htmlcov/
 # Jupyter
 .ipynb_checkpoints/
 
+image.tar
+
 
 # Local secrets and logs
 .env
